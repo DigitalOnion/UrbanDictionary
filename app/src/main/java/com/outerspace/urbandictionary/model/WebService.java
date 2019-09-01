@@ -1,15 +1,14 @@
 package com.outerspace.urbandictionary.model;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.outerspace.urbandictionary.R;
 import com.outerspace.urbandictionary.UrbanDictionaryApp;
+import com.outerspace.urbandictionary.api.TermDefinition;
 import com.outerspace.urbandictionary.api.TermDefinitionList;
 import com.outerspace.urbandictionary.api.UrbanDictionaryApi;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +29,7 @@ public class WebService implements Callback<TermDefinitionList> {
     }
 
     private static UrbanDictionaryApi api;
-    private static WebServiceEvents webServiceClient;
+    private static WebServiceCallback webServiceClient;
 
     public void init() {
         Gson gson = new GsonBuilder()
@@ -46,22 +45,32 @@ public class WebService implements Callback<TermDefinitionList> {
         api = retrofit.create(UrbanDictionaryApi.class);
     }
 
-    public void fetchDefinitions(String term, WebServiceEvents webServiceClient) {
+    public void fetchDefinitions(String word, WebServiceCallback webServiceClient) {
         if(UrbanDictionaryApp.getInstance().isNetworkConnected()) {
             this.webServiceClient = webServiceClient;
-            Call<TermDefinitionList> call = api.call(term);
+            Call<TermDefinitionList> call = api.call(word);
             call.enqueue(this);
         } else {
-            webServiceClient.onFailure(UrbanDictionaryApp.getInstance().getString(R.string.no_network_connection));
+            DbService.getInstance().queryTerm(word, (definitions) -> {
+                if(definitions != null && definitions.size() > 0) {
+                    webServiceClient.onSuccess(definitions);
+
+                } else {
+                    webServiceClient.onFailure(UrbanDictionaryApp.getInstance().getString(R.string.no_network_connection));
+                }
+            } );
         }
     }
 
     @Override
     public void onResponse(Call<TermDefinitionList> call, Response<TermDefinitionList> response) {
-        if(response.isSuccessful())
-            webServiceClient.onSuccess(response.body());
-        else
+        if(response.isSuccessful()) {
+            List<TermDefinition> definitions = response.body().list;
+            webServiceClient.onSuccess(definitions);
+            DbService.getInstance().persist(definitions);
+        } else {
             webServiceClient.onFailure(response.message());
+        }
     }
 
     @Override

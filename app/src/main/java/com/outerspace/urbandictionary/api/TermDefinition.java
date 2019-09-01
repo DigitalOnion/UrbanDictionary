@@ -1,11 +1,19 @@
 
 package com.outerspace.urbandictionary.api;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Entity
 public class TermDefinition {
+
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
     @SerializedName("definition")
     @Expose
@@ -16,6 +24,8 @@ public class TermDefinition {
     @SerializedName("thumbs_up")
     @Expose
     public Integer thumbsUp;    /* count of thumbs up (likes) */
+
+    @Ignore
     @SerializedName("sound_urls")
     @Expose
     public java.util.List<String> soundUrls = new ArrayList<String>();  /* List of URL to wav sound files */

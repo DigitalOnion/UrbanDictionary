@@ -1,14 +1,14 @@
 package com.outerspace.urbandictionary.presenter;
 
 import com.outerspace.urbandictionary.api.TermDefinition;
-import com.outerspace.urbandictionary.api.TermDefinitionList;
 import com.outerspace.urbandictionary.model.WebService;
-import com.outerspace.urbandictionary.model.WebServiceEvents;
+import com.outerspace.urbandictionary.model.WebServiceCallback;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 
-public class MainPresenter implements WebServiceEvents {
+public class MainPresenter implements WebServiceCallback {
     private static WebService webService = WebService.getInstance();
     private Consumer<String> stringConsumer;
 
@@ -18,9 +18,9 @@ public class MainPresenter implements WebServiceEvents {
     }
 
     @Override
-    public void onSuccess(TermDefinitionList definitionList) {
+    public void onSuccess(List<TermDefinition> definitionList) {
         StringBuilder sb = new StringBuilder();
-        for(TermDefinition definition : definitionList.list) {
+        for(TermDefinition definition : definitionList) {
             sb.append(definition.definition).append('\n');
         }
         stringConsumer.accept(sb.toString());
