@@ -1,7 +1,13 @@
 package com.outerspace.urbandictionary.model;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.outerspace.urbandictionary.R;
+import com.outerspace.urbandictionary.UrbanDictionaryApp;
 import com.outerspace.urbandictionary.api.TermDefinitionList;
 import com.outerspace.urbandictionary.api.UrbanDictionaryApi;
 
@@ -41,9 +47,13 @@ public class WebService implements Callback<TermDefinitionList> {
     }
 
     public void fetchDefinitions(String term, WebServiceEvents webServiceClient) {
-        this.webServiceClient = webServiceClient;
-        Call<TermDefinitionList> call = api.call(term);
-        call.enqueue(this);
+        if(UrbanDictionaryApp.getInstance().isNetworkConnected()) {
+            this.webServiceClient = webServiceClient;
+            Call<TermDefinitionList> call = api.call(term);
+            call.enqueue(this);
+        } else {
+            webServiceClient.onFailure(UrbanDictionaryApp.getInstance().getString(R.string.no_network_connection));
+        }
     }
 
     @Override
@@ -58,4 +68,5 @@ public class WebService implements Callback<TermDefinitionList> {
     public void onFailure(Call<TermDefinitionList> call, Throwable t) {
         webServiceClient.onFailure(t.getMessage());
     }
+
 }
