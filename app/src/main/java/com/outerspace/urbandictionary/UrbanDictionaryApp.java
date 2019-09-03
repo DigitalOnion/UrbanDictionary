@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
 
 public class UrbanDictionaryApp extends Application {
     private static UrbanDictionaryApp instance;

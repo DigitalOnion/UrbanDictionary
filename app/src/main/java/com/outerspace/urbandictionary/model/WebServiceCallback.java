@@ -1,7 +1,6 @@
 package com.outerspace.urbandictionary.model;
 
 import com.outerspace.urbandictionary.api.TermDefinition;
-import com.outerspace.urbandictionary.api.TermDefinitionList;
 
 import java.util.List;
 

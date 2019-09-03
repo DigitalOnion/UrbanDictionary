@@ -1,11 +1,9 @@
 package com.outerspace.urbandictionary.model;
 
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.widget.Toast;
 
-import androidx.annotation.UiThread;
 import androidx.room.Room;
 
 import com.outerspace.urbandictionary.R;
